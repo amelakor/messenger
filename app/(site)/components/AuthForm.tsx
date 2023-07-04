@@ -3,6 +3,7 @@ import axios from "axios";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
+import { signIn } from "next-auth/react";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import AuthSocialButton from "./AuthSocialButton";
@@ -33,7 +34,18 @@ const AuthForm = () => {
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         setIsLoading(true);
         if (variant === "login") {
-            // login
+            signIn("credentials", {
+                ...data,
+                redirect: false,
+            }).then((callback) => {
+                if (callback?.error) {
+                    toast.error("Invalid credentials");
+                }
+
+                if (callback?.ok && !callback?.error) {
+                    toast.success("Logged in successfully");
+                }
+            });
         } else {
             axios
                 .post("/api/register", data)
@@ -43,7 +55,21 @@ const AuthForm = () => {
     };
 
     const socialAction = (action: string) => {
-        console.log(action);
+        setIsLoading(true);
+
+        signIn(action, {
+            redirect: false,
+        }).then((callback) => {
+            if (callback?.error) {
+                toast.error("Something went wrong");
+            }
+
+            if (callback?.ok && !callback?.error) {
+                toast.success("Logged in successfully");
+            }
+        });
+
+        setIsLoading(false);
     };
 
     return (
