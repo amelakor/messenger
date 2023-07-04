@@ -1,9 +1,10 @@
 "use client";
 import axios from "axios";
 import { BsGithub, BsGoogle } from "react-icons/bs";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import AuthSocialButton from "./AuthSocialButton";
@@ -12,8 +13,16 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 type Variant = "login" | "register";
 
 const AuthForm = () => {
+    const session = useSession();
+    const router = useRouter();
     const [variant, setVariant] = useState<Variant>("login");
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (session?.status === "authenticated") {
+            router.push("/users");
+        }
+    }, [session?.status, router]);
 
     const toggleVariant = useCallback(() => {
         setVariant((prev) => (prev === "login" ? "register" : "login"));
