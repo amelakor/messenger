@@ -9,6 +9,7 @@ import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import AuthSocialButton from "./AuthSocialButton";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { sign } from "crypto";
 
 type Variant = "login" | "register";
 
@@ -53,11 +54,13 @@ const AuthForm = () => {
 
                 if (callback?.ok && !callback?.error) {
                     toast.success("Logged in successfully");
+                    router.push("/users");
                 }
             });
         } else {
             axios
                 .post("/api/register", data)
+                .then(() => signIn("credentials", data))
                 .catch((err) => toast.error("Something went wrong"));
         }
         setIsLoading(false);
