@@ -1,8 +1,9 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, use, useEffect } from "react";
 import { FullMesageType } from "@/app/types";
 import useConversation from "@/app/hooks/useConversation";
 import MessageBox from "./MessageBox";
+import axios from "axios";
 
 interface BodyProps {
     initialMessages: FullMesageType[];
@@ -12,6 +13,10 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
     const bottomRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
+
+    useEffect(() => {
+        axios.post(`/api/conversations/${conversationId}/seen`);
+    }, [conversationId]);
 
     return (
         <div className="flex-1 overflow-y-auto">
