@@ -46,9 +46,26 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 return [conversation, ...prev];
             });
         };
+
+        const updateHandler = (conversation: FullConversationType) => {
+            setItems((prev) => {
+                return prev.map((item) => {
+                    if (item.id === conversation.id) {
+                        return {
+                            ...item,
+                            messages: conversation.messages,
+                        };
+                    }
+                    return item;
+                });
+            });
+        };
+
+        pusherClient.bind("conversation:update", updateHandler);
         pusherClient.bind("conversation:new", newHandler);
 
         return () => {
+            pusherClient.unbind("conversation:update", updateHandler);
             pusherClient.unsubscribe(pusherKey);
             pusherClient.unbind("conversation:new", newHandler);
         };
