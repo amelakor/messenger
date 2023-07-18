@@ -61,12 +61,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
             });
         };
 
+        const removeHandler = (conversation: FullConversationType) => {
+            setItems((prev) => {
+                return prev.filter((item) => item.id !== conversation.id);
+            });
+        };
+
+        pusherClient.bind("conversation:remove", removeHandler);
         pusherClient.bind("conversation:update", updateHandler);
         pusherClient.bind("conversation:new", newHandler);
 
         return () => {
-            pusherClient.unbind("conversation:update", updateHandler);
             pusherClient.unsubscribe(pusherKey);
+            pusherClient.unbind("conversation:remove", removeHandler);
+            pusherClient.unbind("conversation:update", updateHandler);
             pusherClient.unbind("conversation:new", newHandler);
         };
     }, [pusherKey]);
