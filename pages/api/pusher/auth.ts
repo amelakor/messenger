@@ -8,7 +8,8 @@ export default async function handler(
     request: NextApiRequest,
     response: NextApiResponse
 ) {
-    const session = await getServerSession({ req: request, ...authOptions });
+    console.log(request.body, "request auth");
+    const session = await getServerSession(request, response, authOptions);
 
     if (!session?.user?.email) {
         return response.status(401).json({ error: "Unauthorized" });
